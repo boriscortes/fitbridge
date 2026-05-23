@@ -1,6 +1,6 @@
 # fitbridge
 
-Sync fitness activities from COROS to **Strava**, **Garmin Connect**, and **TrainingPeaks** in one command. Also includes a GPX route tiling tool for generating exact-distance training routes from a base loop.
+Sync fitness activities from COROS to **Strava**, **Garmin Connect**, and **TrainingPeaks** in one command. Fetch and analyze **Whoop** recovery data. Generate exact-distance GPX routes from a base loop.
 
 ## Features
 
@@ -9,6 +9,7 @@ Sync fitness activities from COROS to **Strava**, **Garmin Connect**, and **Trai
 - Handles Garmin Connect 409 duplicates gracefully, with automatic retry on network errors
 - Uploads to any combination of Strava, Garmin, and TrainingPeaks
 - Skips walks by default; include them with `--walks` or sync a single file with `--file`
+- Fetches Whoop recovery, HRV, sleep, and strain data; exports to Excel with rolling metrics
 - Uses your system timezone automatically (no hardcoded offsets)
 - Rotating file logs at `logs/coros_sync.log`
 
@@ -29,8 +30,9 @@ Then ask naturally:
 - "Sync last 7 days to Strava only"
 - "Upload this FIT file to Garmin"
 - "Generate a 26km route from central park"
+- "Fetch my latest Whoop data and generate a report"
 
-Available skills: `/setup`, `/sync`, `/route`
+Available skills: `/setup`, `/sync`, `/route`, `/whoop`
 
 ---
 
@@ -40,47 +42,65 @@ Available skills: `/setup`, `/sync`, `/route`
 
 - Python 3.9+
 - Node.js + pnpm (for the COROS API wrapper)
-- Python packages: `pip install fitparse garminconnect requests`
+- Python packages: `python3 -m pip install fitparse garminconnect requests openpyxl`
 - TrainingPeaks (optional): [trainingpeaks-mcp](https://github.com/JamsusMaximus/trainingpeaks-mcp) installed and authed
+- Whoop (optional): developer app credentials from https://developer.whoop.com
 
-## Setup
+### Setup
 
 ```bash
 git clone --recurse-submodules https://github.com/boriscortes/fitbridge.git
 cd fitbridge
 
-# Install Python dependencies
-pip install fitparse garminconnect requests
+# Automated setup (installs deps, checks credentials)
+bash setup.sh
 
-# Install COROS API wrapper
+# Or manually:
+python3 -m pip install fitparse garminconnect requests openpyxl
 cd coros-api && pnpm install && cd ..
 
-# Configure credentials
 cp .env.example .env
-# Edit .env with your Strava, Garmin, and COROS credentials
+# Edit .env with your credentials
 ```
 
 ### Strava credentials
 
 1. Create an app at https://www.strava.com/settings/api
 2. Set `Authorization Callback Domain` to `localhost`
-3. Run the OAuth flow once to get your `access_token` and `refresh_token`
+3. Run the OAuth helper to get your tokens automatically:
+
+```bash
+python3 tools/strava_oauth.py
+```
 
 ### TrainingPeaks (optional)
 
 ```bash
-# Install trainingpeaks-mcp
+# Clone to a path of your choice
 git clone https://github.com/JamsusMaximus/trainingpeaks-mcp ~/Developer/trainingpeaks-mcp
 cd ~/Developer/trainingpeaks-mcp && pip install -e .
 
-# Authenticate (stores session cookie in system keyring)
-tp-mcp auth
+# Authenticate via Chrome (stores session cookie in system keyring)
+tp-mcp auth --from-browser chrome
 
 # Add to .env:
 # TP_MCP_PATH=~/Developer/trainingpeaks-mcp
 ```
 
-## Usage
+### Whoop (optional)
+
+1. Create a developer app at https://developer.whoop.com
+2. Add to `.env`:
+   ```
+   WHOOP_CLIENT_ID=your_client_id
+   WHOOP_CLIENT_SECRET=your_client_secret
+   ```
+3. Run the first fetch — this opens a browser OAuth flow on port 8080:
+   ```bash
+   python3 whoop/whoop_fetch.py
+   ```
+
+## Activity sync
 
 ```bash
 # Sync today's activities to all configured platforms
@@ -108,6 +128,24 @@ python3 coros_sync.py --file path/to/activity.fit
 python3 coros_sync.py --days 7 --force
 ```
 
+## Whoop data
+
+```bash
+# Fetch latest data (incremental)
+python3 whoop/whoop_fetch.py
+
+# Full re-fetch from scratch
+python3 whoop/whoop_fetch.py --full
+
+# Generate Excel report (recovery, HRV, sleep, strain)
+python3 whoop/whoop_analyze.py
+
+# Analyze from a specific date
+python3 whoop/whoop_analyze.py --from 2025-01-01
+```
+
+Output: `whoop-data/whoop_metrics.xlsx` with daily metrics and rolling HRV-CV trends.
+
 ## Route generation
 
 Generate an exact-distance GPX route by tiling a base loop. Useful for loading into COROS or Garmin as a course for treadmill grade simulation or paced runs.
@@ -131,22 +169,28 @@ fitbridge/
 ├── strava_refresh.py   # Strava OAuth helper
 ├── coros-api/          # COROS API wrapper (git submodule)
 ├── tools/
-│   └── tile_route.py   # GPX route tiler
+│   ├── tile_route.py   # GPX route tiler
+│   └── strava_oauth.py # Strava OAuth token helper
+├── whoop/
+│   ├── whoop_auth.py   # Whoop OAuth token management
+│   ├── whoop_fetch.py  # fetch data from Whoop API
+│   └── whoop_analyze.py # generate Excel report
 ├── routes/
 │   ├── base/           # source GPX loops
 │   └── out/            # generated routes (gitignored)
-├── analysis/           # data analysis scripts (WIP)
+├── whoop-data/         # fetched Whoop JSON + reports (gitignored)
 ├── logs/               # rotating sync logs (gitignored)
 └── .claude/
     ├── settings.json   # Bash permissions
-    └── skills/         # /sync and /route slash commands
+    └── skills/         # /setup, /sync, /route, /whoop slash commands
 ```
 
 ## Platform notes
 
 | Platform | Auth | Notes |
 |----------|------|-------|
-| Strava | OAuth tokens in `.env` | Auto-refreshes on expiry |
+| Strava | OAuth tokens in `.env` | Auto-refreshes on expiry; run `tools/strava_oauth.py` to set up |
 | Garmin Connect | Email/password in `.env` | Retries on network error; 409 = duplicate |
 | TrainingPeaks | Session cookie via `tp-mcp auth` | Creates blank workout then attaches FIT |
 | COROS | Email/password in `.env` | Uses unofficial API — may break on COROS app updates |
+| Whoop | OAuth via browser (port 8080) | Tokens stored in `whoop-data/whoop_tokens.json` |
