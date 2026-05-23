@@ -1,0 +1,3 @@
+[submodule "coros-api"]
+	path = coros-api
+	url = https://github.com/xballoy/coros-api

@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.pyc
+coros-exports/
+routes/out/
+.strava_synced.txt
+.garmin_synced.txt
+logs/
+temp/
