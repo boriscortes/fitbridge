@@ -12,7 +12,29 @@ Sync fitness activities from COROS to **Strava**, **Garmin Connect**, and **Trai
 - Uses your system timezone automatically (no hardcoded offsets)
 - Rotating file logs at `logs/coros_sync.log`
 
-## Prerequisites
+## Usage with Claude Code
+
+Clone the repo and open it in Claude Code:
+
+```bash
+git clone --recurse-submodules https://github.com/boriscortes/fitbridge.git
+cd fitbridge
+claude   # opens Claude Code in this workspace
+```
+
+Then ask naturally:
+- "Sync today's activities"
+- "Sync last 7 days to Strava only"
+- "Upload this FIT file to Garmin"
+- "Generate a 26km route from central park"
+
+Available skills: `/sync`, `/route`
+
+---
+
+## CLI usage (advanced)
+
+### Prerequisites
 
 - Python 3.9+
 - Node.js + pnpm (for the COROS API wrapper)
@@ -102,6 +124,7 @@ Add your own base loops to `routes/base/` as `.gpx` files.
 
 ```
 fitbridge/
+├── CLAUDE.md           # Claude Code workspace guide
 ├── coros_sync.py       # main sync script
 ├── strava_refresh.py   # Strava OAuth helper
 ├── coros-api/          # COROS API wrapper (git submodule)
@@ -111,7 +134,10 @@ fitbridge/
 │   ├── base/           # source GPX loops
 │   └── out/            # generated routes (gitignored)
 ├── analysis/           # data analysis scripts (WIP)
-└── logs/               # rotating sync logs (gitignored)
+├── logs/               # rotating sync logs (gitignored)
+└── .claude/
+    ├── settings.json   # Bash permissions
+    └── skills/         # /sync and /route slash commands
 ```
 
 ## Platform notes

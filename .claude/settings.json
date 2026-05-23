@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 coros_sync.py*)",
+      "Bash(python3 tools/tile_route.py*)",
+      "Bash(ls routes/base*)"
+    ]
+  }
+}
