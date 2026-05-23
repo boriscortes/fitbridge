@@ -7,3 +7,4 @@ routes/out/
 .garmin_synced.txt
 logs/
 temp/
+.claude/settings.local.json

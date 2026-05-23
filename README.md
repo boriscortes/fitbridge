@@ -22,13 +22,15 @@ cd fitbridge
 claude   # opens Claude Code in this workspace
 ```
 
+New here? Type `/setup` to be guided through credentials and dependencies.
+
 Then ask naturally:
 - "Sync today's activities"
 - "Sync last 7 days to Strava only"
 - "Upload this FIT file to Garmin"
 - "Generate a 26km route from central park"
 
-Available skills: `/sync`, `/route`
+Available skills: `/setup`, `/sync`, `/route`
 
 ---
 
@@ -38,8 +40,8 @@ Available skills: `/sync`, `/route`
 
 - Python 3.9+
 - Node.js + pnpm (for the COROS API wrapper)
-- Python packages: `pip install fitparse garmin-connect requests`
-- TrainingPeaks (optional): [trainingpeaks-mcp](https://github.com/your-org/trainingpeaks-mcp) installed and authed
+- Python packages: `pip install fitparse garminconnect requests`
+- TrainingPeaks (optional): [trainingpeaks-mcp](https://github.com/JamsusMaximus/trainingpeaks-mcp) installed and authed
 
 ## Setup
 
@@ -48,7 +50,7 @@ git clone --recurse-submodules https://github.com/boriscortes/fitbridge.git
 cd fitbridge
 
 # Install Python dependencies
-pip install fitparse garmin-connect requests
+pip install fitparse garminconnect requests
 
 # Install COROS API wrapper
 cd coros-api && pnpm install && cd ..
@@ -68,7 +70,7 @@ cp .env.example .env
 
 ```bash
 # Install trainingpeaks-mcp
-git clone https://github.com/your-org/trainingpeaks-mcp ~/Developer/trainingpeaks-mcp
+git clone https://github.com/JamsusMaximus/trainingpeaks-mcp ~/Developer/trainingpeaks-mcp
 cd ~/Developer/trainingpeaks-mcp && pip install -e .
 
 # Authenticate (stores session cookie in system keyring)

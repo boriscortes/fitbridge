@@ -1,9 +1,15 @@
 {
   "permissions": {
     "allow": [
+      "Bash(bash setup.sh*)",
       "Bash(python3 coros_sync.py*)",
       "Bash(python3 tools/tile_route.py*)",
-      "Bash(ls routes/base*)"
+      "Bash(python3 tools/strava_oauth.py*)",
+      "Bash(ls routes/base*)",
+      "Bash(git submodule update --init*)",
+      "Bash(git clone https://github.com/JamsusMaximus/trainingpeaks-mcp*)",
+      "Bash(pip install -e *)",
+      "Bash(which python3)"
     ]
   }
 }
