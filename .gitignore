@@ -8,3 +8,4 @@ routes/out/
 logs/
 temp/
 .claude/settings.local.json
+whoop-data/

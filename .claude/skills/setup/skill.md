@@ -60,6 +60,24 @@ GARMIN_PASSWORD=<password>
 
 ---
 
+### Whoop (optional)
+
+Ask if the user wants Whoop integration. If no, skip.
+
+If yes:
+1. Guide to https://developer.whoop.com to create a developer app
+2. Ask for Client ID and Client Secret → write to `.env`:
+   ```
+   WHOOP_CLIENT_ID=<id>
+   WHOOP_CLIENT_SECRET=<secret>
+   ```
+3. Run first fetch (triggers browser OAuth on port 8080):
+   ```bash
+   python3 whoop/whoop_fetch.py
+   ```
+
+---
+
 ## Step 3: TrainingPeaks MCP (optional)
 
 Ask the user if they want TrainingPeaks integration. If no, skip this step.
@@ -121,4 +139,4 @@ If this prints the help text, setup is complete.
 Summarize what was configured:
 - ✅ / ⏭️ (skipped) for each section: COROS, Strava, Garmin, TrainingPeaks
 - Remind them to restart Claude Code if the TP MCP server was configured
-- Tell them they're ready to use `/sync` and `/route`
+- Tell them they're ready to use `/sync`, `/route`, and `/whoop`

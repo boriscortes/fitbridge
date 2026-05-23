@@ -118,6 +118,7 @@ check_env() {
 check_env "COROS"          COROS_EMAIL COROS_PASSWORD
 check_env "Strava"         STRAVA_CLIENT_ID STRAVA_CLIENT_SECRET STRAVA_ACCESS_TOKEN STRAVA_REFRESH_TOKEN
 check_env "Garmin"         GARMIN_EMAIL GARMIN_PASSWORD
+check_env "Whoop"          WHOOP_CLIENT_ID WHOOP_CLIENT_SECRET
 check_env "TrainingPeaks"  TP_MCP_PATH
 
 echo ""

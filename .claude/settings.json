@@ -9,7 +9,9 @@
       "Bash(git submodule update --init*)",
       "Bash(git clone https://github.com/JamsusMaximus/trainingpeaks-mcp*)",
       "Bash(pip install -e *)",
-      "Bash(which python3)"
+      "Bash(which python3)",
+      "Bash(python3 whoop/whoop_fetch.py*)",
+      "Bash(python3 whoop/whoop_analyze.py*)"
     ]
   }
 }

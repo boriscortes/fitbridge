@@ -29,6 +29,17 @@ Use `/sync` to sync activities and `/route` to generate routes. Both can also be
 - Logs written to `logs/coros_sync.log` (rotating, 1 MB cap)
 - TrainingPeaks upload is a two-step operation: creates a blank workout, then attaches the FIT file
 
+## Whoop
+
+Scripts live in `whoop/`. Data is fetched to `whoop-data/` (gitignored).
+
+- `whoop/whoop_fetch.py` — fetch latest data from Whoop API (incremental by default); triggers browser OAuth on first run (port 8080)
+- `whoop/whoop_analyze.py` — generate `whoop-data/whoop_metrics.xlsx` with HRV trends, recovery scores, sleep stages, rolling HRV-CV
+- Auth tokens stored in `whoop-data/whoop_tokens.json`
+
+Requires `WHOOP_CLIENT_ID` and `WHOOP_CLIENT_SECRET` in `.env`. Create a developer app at https://developer.whoop.com.
+Use `/whoop` skill to fetch and analyze data.
+
 ## Routes
 
 Base GPX loops live in `routes/base/`. Generated routes go to `routes/out/` (gitignored). To add a new base loop, drop a `.gpx` file into `routes/base/`.
